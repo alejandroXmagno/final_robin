@@ -1,0 +1,14 @@
+digraph G {
+"base_link" -> "chassis_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"odom" -> "base_link"[label=" Broadcaster: default_authority\nAverage rate: 15.196\nBuffer length: 5.067\nMost recent transform: 1763152260.758195\nOldest transform: 1763152255.691232\n"];
+"chassis_link" -> "fl_wheel_link"[label=" Broadcaster: default_authority\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 1763152260.711431\nOldest transform: 1763152255.811525\n"];
+"chassis_link" -> "fr_wheel_link"[label=" Broadcaster: default_authority\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 1763152260.711431\nOldest transform: 1763152255.811525\n"];
+"rl_castor_housing_link" -> "rl_castor_link"[label=" Broadcaster: default_authority\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 1763152260.711431\nOldest transform: 1763152255.811525\n"];
+"chassis_link" -> "rl_castor_housing_link"[label=" Broadcaster: default_authority\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 1763152260.711431\nOldest transform: 1763152255.811525\n"];
+"rr_castor_housing_link" -> "rr_castor_link"[label=" Broadcaster: default_authority\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 1763152260.711431\nOldest transform: 1763152255.811525\n"];
+"chassis_link" -> "rr_castor_housing_link"[label=" Broadcaster: default_authority\nAverage rate: 10.204\nBuffer length: 4.9\nMost recent transform: 1763152260.711431\nOldest transform: 1763152255.811525\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1763152260.8301563"[ shape=plaintext ] ;
+}->"odom";
+}

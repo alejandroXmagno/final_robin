@@ -1,0 +1,58 @@
+%% Autonomous Exploration Robot - Finite State Machine
+%% Render this with: https://mermaid.live/ or GitHub/GitLab markdown
+
+stateDiagram-v2
+    [*] --> INITIALIZATION
+    
+    INITIALIZATION --> WAITING_FOR_MAP: Nav2 server ready
+    
+    WAITING_FOR_MAP --> WAITING_FOR_MAP_FRAME: Map data received
+    WAITING_FOR_MAP --> WAITING_FOR_MAP: No map yet
+    
+    WAITING_FOR_MAP_FRAME --> IDLE: TF map→base_link available
+    WAITING_FOR_MAP_FRAME --> WAITING_FOR_MAP_FRAME: TF not ready
+    
+    IDLE --> NAVIGATING_TO_FRONTIER: Frontier found\n& no waving detected
+    IDLE --> APPROACHING_PERSON: Waving person detected\n(distance > 0.3m)
+    IDLE --> IDLE: No frontiers\nOR goal in progress
+    
+    NAVIGATING_TO_FRONTIER --> IDLE: Goal reached\nOR timeout (120s)
+    NAVIGATING_TO_FRONTIER --> APPROACHING_PERSON: Waving detected\n(preempts goal)
+    NAVIGATING_TO_FRONTIER --> NAVIGATING_TO_FRONTIER: Following path
+    
+    APPROACHING_PERSON --> WAITING_NEAR_PERSON: Reached person\n(within 0.3m)
+    APPROACHING_PERSON --> IDLE: Navigation failed\nOR goal rejected
+    
+    WAITING_NEAR_PERSON --> IDLE: 10 seconds elapsed
+    WAITING_NEAR_PERSON --> WAITING_NEAR_PERSON: Waiting...
+    
+    note right of INITIALIZATION
+        • Initialize MediaPipe BlazePose
+        • Wait for nav2 action server (30s timeout)
+        • Subscribe to topics: /map, /camera/*, /scan
+    end note
+    
+    note right of IDLE
+        • Check for waving person (5 Hz)
+        • Exploration timer (every 3s)
+        • No active navigation goal
+    end note
+    
+    note right of NAVIGATING_TO_FRONTIER
+        • Active nav goal to frontier
+        • Monitoring for waving person
+        • Timeout protection: 120s max
+    end note
+    
+    note right of APPROACHING_PERSON
+        • Cancel exploration goal
+        • Navigate to person - 0.3m distance
+        • Orient robot toward person
+    end note
+    
+    note right of WAITING_NEAR_PERSON
+        • 10 second wait timer
+        • Maintain position
+        • No exploration during wait
+    end note
+

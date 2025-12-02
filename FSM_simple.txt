@@ -1,0 +1,108 @@
+AUTONOMOUS EXPLORATION ROBOT - FINITE STATE MACHINE (SIMPLIFIED)
+═══════════════════════════════════════════════════════════════════
+
+                    ┌─────────────────┐
+                    │ INITIALIZATION  │
+                    │  (nav2 ready)   │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ WAITING_FOR_MAP │
+                    └────────┬────────┘
+                             │
+                             ▼
+                ┌────────────────────────┐
+                │ WAITING_FOR_MAP_FRAME  │
+                └───────────┬────────────┘
+                            │
+                            ▼
+        ┌───────────────────────────────────────┐
+        │                                       │
+        │              IDLE STATE               │
+        │         (main decision point)         │
+        │                                       │
+        └──┬────────────────────────────────┬───┘
+           │                                │
+           │                                │
+    Waving │                                │ Frontier
+    Detected                                │ Found
+           │                                │
+           │                                │
+           ▼                                ▼
+  ┌─────────────────┐          ┌──────────────────────┐
+  │  APPROACHING    │          │   NAVIGATING_TO      │
+  │     PERSON      │◄─────────│     FRONTIER         │
+  │                 │  Waving  │                      │
+  │ (nav to person) │ Detected │  (following path)    │
+  └────────┬────────┘          └──────────┬───────────┘
+           │                              │
+           │ Reached                      │ Goal
+           │ Person                       │ Reached
+           │                              │
+           ▼                              │
+  ┌─────────────────┐                    │
+  │ WAITING_NEAR    │                    │
+  │    PERSON       │                    │
+  │                 │                    │
+  │  (10 sec wait)  │                    │
+  └────────┬────────┘                    │
+           │                             │
+           │ Timer                       │
+           │ Expired                     │
+           │                             │
+           └──────────┬──────────────────┘
+                      │
+                      ▼
+                  [ IDLE ]
+
+
+KEY TRANSITIONS:
+═══════════════
+
+IDLE → NAVIGATING_TO_FRONTIER
+    Condition: Frontier found AND no waving detected
+    
+IDLE → APPROACHING_PERSON
+    Condition: Waving person detected AND distance > 0.3m
+    
+NAVIGATING_TO_FRONTIER → APPROACHING_PERSON
+    Condition: Waving detected (PREEMPTS exploration)
+    
+NAVIGATING_TO_FRONTIER → IDLE
+    Condition: Goal reached OR timeout (120s)
+    
+APPROACHING_PERSON → WAITING_NEAR_PERSON
+    Condition: Reached within 0.3m of person
+    
+WAITING_NEAR_PERSON → IDLE
+    Condition: 10 seconds elapsed
+
+
+PRIORITIES (HIGH → LOW):
+═══════════════════════
+
+1. Person Detection (HIGHEST - preempts exploration)
+2. Goal Timeout Safety (120s max per goal)
+3. Frontier Exploration (default behavior)
+
+
+CONCURRENT PROCESSES:
+═══════════════════════
+
+• Pose Detection: 5 Hz (parallel background)
+• Timeout Checker: 1 Hz (parallel background)
+• Exploration Timer: Every 3 seconds
+• Visualization: 2 Hz (markers, paths)
+
+
+STATE VARIABLES:
+═══════════════
+
+• approaching_person: bool
+• person_wait_start_time: float | None
+• navigation_goal_handle: GoalHandle | None
+• is_waving: bool (updated by pose detection)
+• current_map: OccupancyGrid
+• map_frame_available: bool
+

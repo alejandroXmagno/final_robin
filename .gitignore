@@ -1,0 +1,39 @@
+# ROS build artifacts
+build/
+devel/
+install/
+log/
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+*.egg
+
+# C++
+*.o
+*.a
+*.so
+*.dylib
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ROS specific
+*.bag
+*.pyc
+CATKIN_IGNORE
+
