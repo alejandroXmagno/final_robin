@@ -37,3 +37,8 @@ Thumbs.db
 *.pyc
 CATKIN_IGNORE
 
+# External dependencies (git submodules or cloned repos)
+src/bno055/
+src/roverrobotics_ros2/
+src/rplidar_ros/
+
